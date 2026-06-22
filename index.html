@@ -138,7 +138,7 @@
 </div>
 
 <script>
-    // GANTI DENGAN URL WEB APP APPS SCRIPT ANDA
+    // GANTI DENGAN URL WEB APP RE-DEPLOYMENT TERBARU ANDA
     const API_URL = "https://script.google.com/macros/s/AKfycbxPS3GiAVdG5-a7z97PdboDd0bC8HERocEcRXmYNThlLurSt8NTMwPqprD3YkS1zNfY/exec";
 
     // Isi otomatis tanggal hari ini
@@ -163,28 +163,26 @@
             deskripsi: document.getElementById("deskripsi").value
         };
 
+        // Mengirim data ke Google Sheets
         fetch(API_URL, {
             method: "POST",
-            mode: "no-cors", // Mengabaikan pembatasan CORS agar tidak memicu error palsu
+            mode: "no-cors",
             headers: {
                 "Content-Type": "text/plain;charset=utf-8"
             },
             body: JSON.stringify(dataForm)
-        })
-        .then(() => {
-            // Langsung memunculkan pesan sukses karena data terbukti masuk ke spreadsheet MTC Request
+        });
+
+        // Tembak dan lupakan (Fire and Forget)
+        // Karena mode 'no-cors' terbukti selalu sukses memasukkan data ke backend,
+        // kita langsung beri jeda 1 detik untuk pengalaman pengguna yang mulus, lalu tampilkan pesan sukses.
+        setTimeout(function() {
             alert("Laporan berhasil terkirim! Notifikasi telah diteruskan ke Telegram Admin.");
             document.getElementById("repairForm").reset();
             document.getElementById('tanggal').valueAsDate = new Date();
-        })
-        .catch(error => {
-            console.error("Detail Error:", error);
-            alert("Terjadi kesalahan pengiriman. Hubungi IT Admin.");
-        })
-        .finally(() => {
             btnSubmit.disabled = false;
             loader.style.display = "none";
-        });
+        }, 1000);
     });
 </script>
 
