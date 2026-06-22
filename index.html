@@ -1,136 +1,52 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Permintaan Perbaikan</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f4f7f6; }
-        .container { max-width: 550px; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin: auto; }
-        h2 { text-align: center; color: #333; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        .form-row { display: flex; gap: 15px; }
-        .form-row .form-group { flex: 1; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
-        textarea { resize: vertical; }
-        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        button:hover { background: #218838; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
-        .loading { display: none; text-align: center; color: #666; margin-top: 15px; font-style: italic; }
-    </style>
-</head>
-<body>
+const API_URL = "https://script.google.com/macros/s/AKfycbxPS3GiAVdG5-a7z97PdboDd0bC8HERocEcRXmYNThlLurSt8NTMwPqprD3YkS1zNfY/exec";
 
-<div class="container">
-    <h2>Form Permintaan Perbaikan</h2>
-    <form id="repairForm">
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label for="tanggal">Tanggal:</label>
-                <input type="date" id="tanggal" required>
-            </div>
-            <div class="form-group">
-                <label for="nama">Nama Pelapor:</label>
-                <input type="text" id="nama" required placeholder="Nama lengkap">
-            </div>
-        </div>
+document.getElementById('tanggal').valueAsDate = new Date();
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="unit">Unit Kerja:</label>
-                <select id="unit" required>
-                    <option value="">-- Pilih Unit --</option>
-                    <option value="Mechanic">Mechanic</option>
-                    <option value="Electric">Electric</option>
-                    <option value="Automotive">Automotive</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="kategori">Kategori:</label>
-                <select id="kategori" required>
-                    <option value="">-- Pilih Urgensi --</option>
-                    <option value="N1">N1 (Sangat Mendesak)</option>
-                    <option value="N2">N2 (Sedang)</option>
-                    <option value="N3">N3 (Biasa)</option>
-                </select>
-            </div>
-        </div>
+document.getElementById("repairForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    
+    const btnSubmit = document.getElementById("btnSubmit");
+    const loader = document.getElementById("loader");
+    
+    btnSubmit.disabled = true;
+    loader.style.display = "block";
+    
+    const dataForm = {
+        tanggal: document.getElementById("tanggal").value,
+        nama: document.getElementById("nama").value,
+        unit: document.getElementById("unit").value,
+        kategori: document.getElementById("kategori").value,
+        dtAwal: document.getElementById("dtAwal").value,
+        dtAkhir: document.getElementById("dtAkhir").value,
+        deskripsi: document.getElementById("deskripsi").value
+    };
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="dtAwal">Jam Downtime Awal:</label>
-                <input type="time" id="dtAwal" required>
-            </div>
-            <div class="form-group">
-                <label for="dtAkhir">Jam Downtime Akhir:</label>
-                <input type="time" id="dtAkhir" required>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="deskripsi">Deskripsi Masalah / Perbaikan:</label>
-            <textarea id="deskripsi" rows="4" required placeholder="Jelaskan detail kerusakan atau perbaikan..."></textarea>
-        </div>
-
-        <button type="submit" id="btnSubmit">Kirim Permintaan</button>
-        <div class="loading" id="loader">Memproses data dan mengirim notifikasi ke Telegram Admin...</div>
-    </form>
-</div>
-
-<script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxHQ3UDX_22tzdaA3rc7JPKAs9TKdA6E63qjp7m2WD2cH49_sGdmEDQp_hoiGLzH9A/exec";
-
-    document.getElementById('tanggal').valueAsDate = new Date();
-
-    document.getElementById("repairForm").addEventListener("submit", function(e) {
-        e.preventDefault();
-        
-        const btnSubmit = document.getElementById("btnSubmit");
-        const loader = document.getElementById("loader");
-        
-        btnSubmit.disabled = true;
-        loader.style.display = "block";
-        
-        const dataForm = {
-            tanggal: document.getElementById("tanggal").value,
-            nama: document.getElementById("nama").value,
-            unit: document.getElementById("unit").value,
-            kategori: document.getElementById("kategori").value,
-            dtAwal: document.getElementById("dtAwal").value,
-            dtAkhir: document.getElementById("dtAkhir").value,
-            deskripsi: document.getElementById("deskripsi").value
-        };
-
-        fetch(API_URL, {
-            method: "POST",
-            mode: "cors",
-            headers: {
-                "Content-Type": "text/plain;charset=utf-8"
-            },
-            body: JSON.stringify(dataForm)
-        })
-        .then(response => response.json())
-        .then(result => {
-            if(result.status === "success") {
-                alert("Laporan berhasil terkirim! Notifikasi telah diteruskan ke Telegram Admin.");
-                document.getElementById("repairForm").reset();
-                document.getElementById('tanggal').valueAsDate = new Date();
-            } else {
-                alert("Gagal mengirim data: " + result.message);
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("Terjadi gangguan jaringan, coba beberapa saat lagi.");
-        })
-        .finally(() => {
-            btnSubmit.disabled = false;
-            loader.style.display = "none";
-        });
+    fetch(API_URL, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+            "Content-Type": "text/plain;charset=utf-8" // bypass preflight check
+        },
+        body: JSON.stringify(dataForm)
+    })
+    // Mengubah .json() menjadi .text() karena respons dari Apps Script kini berupa teks HTML biasa
+    .then(response => response.text()) 
+    .then(responseText => {
+        // Cek apakah teks mengandung kata SUCCESS dari HtmlService
+        if(responseText.includes("SUCCESS")) {
+            alert("Laporan berhasil terkirim! Notifikasi telah diteruskan ke Telegram Admin.");
+            document.getElementById("repairForm").reset();
+            document.getElementById('tanggal').valueAsDate = new Date();
+        } else {
+            alert("Gagal menyimpan di sistem Google: " + responseText);
+        }
+    })
+    .catch(error => {
+        console.error("Detail Error:", error);
+        alert("Terjadi kesalahan pengiriman. Hubungi IT Admin.");
+    })
+    .finally(() => {
+        btnSubmit.disabled = false;
+        loader.style.display = "none";
     });
-</script>
-
-</body>
-</html>
+});
