@@ -3,82 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Permintaan Perbaikan</title>
+    <title>MTC Request Form</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 20px; 
-            background: #f4f7f6; 
+        /* Base & Reset Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
-        .container { 
-            max-width: 550px; 
-            background: white; 
-            padding: 25px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
-            margin: auto; 
+
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
-        h2 { 
-            text-align: center; 
-            color: #333; 
-            margin-bottom: 20px; 
+
+        /* Container Mobile-First (Full width di mobile, max width di desktop) */
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
         }
-        .form-group { 
-            margin-bottom: 15px; 
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 24px;
+            text-align: center;
+            letter-spacing: -0.025em;
         }
-        .form-row { 
-            display: flex; 
-            gap: 15px; 
+
+        /* Form Layouts */
+        .form-group {
+            margin-bottom: 18px;
         }
-        .form-row .form-group { 
-            flex: 1; 
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
         }
-        label { 
-            display: block; 
-            margin-bottom: 5px; 
-            font-weight: bold; 
-            color: #555; 
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #475569;
         }
-        input, select, textarea { 
-            width: 100%; 
-            padding: 10px; 
-            border: 1px solid #ccc; 
-            border-radius: 4px; 
-            box-sizing: border-box; 
-            font-size: 14px; 
+
+        /* Modern Input Styling */
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            background-color: #f1f5f9;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            color: #1e293b;
+            transition: all 0.2s ease;
+            outline: none;
         }
-        textarea { 
-            resize: vertical; 
+
+        input:focus, select:focus, textarea:focus {
+            background-color: #ffffff;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
         }
-        button { 
-            width: 100%; 
-            padding: 12px; 
-            background: #28a745; 
-            color: white; 
-            border: none; 
-            border-radius: 4px; 
-            font-size: 16px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            margin-top: 10px; 
+
+        textarea {
+            resize: none;
         }
-        button:hover { 
-            background: #218838; 
+
+        /* Modern Green Button */
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
         }
-        button:disabled { 
-            background: #ccc; 
-            cursor: not-allowed; 
+
+        button:hover {
+            background-color: #059669;
         }
-        .loading { 
-            display: none; 
-            text-align: center; 
-            color: #666; 
-            margin-top: 15px; 
-            font-style: italic; 
+
+        button:disabled {
+            background-color: #94a3b8;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* Seamless Custom Toast Notification */
+        .toast {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #0f172a;
+            color: #ffffff;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+            transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 9999;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            top: 24px;
+        }
+
+        /* Responsive Grid untuk Tablet ke Atas (Desktop Mode) */
+        @media (min-width: 480px) {
+            .form-row {
+                flex-direction: row;
+                gap: 16px;
+            }
+            .form-row .form-group {
+                flex: 1;
+            }
         }
     </style>
 </head>
 <body>
+
+<div id="customToast" class="toast">Permintaan Perbaikan Terkirim!</div>
 
 <div class="container">
     <h2>Form Permintaan Perbaikan</h2>
@@ -86,29 +154,29 @@
         
         <div class="form-row">
             <div class="form-group">
-                <label for="tanggal">Tanggal:</label>
+                <label for="tanggal">Tanggal</label>
                 <input type="date" id="tanggal" required>
             </div>
             <div class="form-group">
-                <label for="nama">Nama Pelapor:</label>
+                <label for="nama">Nama Pelapor</label>
                 <input type="text" id="nama" required placeholder="Nama lengkap">
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group">
-                <label for="unit">Unit Kerja:</label>
+                <label for="unit">Unit Kerja</label>
                 <select id="unit" required>
-                    <option value="">-- Pilih Unit --</option>
+                    <option value="">Pilih Unit</option>
                     <option value="Mechanic">Mechanic</option>
                     <option value="Electric">Electric</option>
                     <option value="Automotive">Automotive</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="kategori">Kategori:</label>
+                <label for="kategori">Kategori</label>
                 <select id="kategori" required>
-                    <option value="">-- Pilih Urgensi --</option>
+                    <option value="">Pilih Urgensi</option>
                     <option value="N1">N1 (Sangat Mendesak)</option>
                     <option value="N2">N2 (Sedang)</option>
                     <option value="N3">N3 (Biasa)</option>
@@ -118,22 +186,21 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label for="dtAwal">Jam Downtime Awal:</label>
+                <label for="dtAwal">Downtime Awal</label>
                 <input type="time" id="dtAwal" required>
             </div>
             <div class="form-group">
-                <label for="dtAkhir">Jam Downtime Akhir:</label>
+                <label for="dtAkhir">Downtime Akhir</label>
                 <input type="time" id="dtAkhir" required>
             </div>
         </div>
 
         <div class="form-group">
-            <label for="deskripsi">Deskripsi Masalah / Perbaikan:</label>
-            <textarea id="deskripsi" rows="4" required placeholder="Jelaskan detail kerusakan atau perbaikan..."></textarea>
+            <label for="deskripsi">Deskripsi Masalah</label>
+            <textarea id="deskripsi" rows="4" required placeholder="Jelaskan detail kerusakan..."></textarea>
         </div>
 
         <button type="submit" id="btnSubmit">Kirim Permintaan</button>
-        <div class="loading" id="loader">Memproses data dan mengirim notifikasi ke Telegram Admin...</div>
     </form>
 </div>
 
@@ -141,17 +208,17 @@
     // GANTI DENGAN URL WEB APP RE-DEPLOYMENT TERBARU ANDA
     const API_URL = "https://script.google.com/macros/s/AKfycbxPS3GiAVdG5-a7z97PdboDd0bC8HERocEcRXmYNThlLurSt8NTMwPqprD3YkS1zNfY/exec";
 
-    // Isi otomatis tanggal hari ini
+    // Set tanggal default ke hari ini
     document.getElementById('tanggal').valueAsDate = new Date();
 
     document.getElementById("repairForm").addEventListener("submit", function(e) {
         e.preventDefault();
         
         const btnSubmit = document.getElementById("btnSubmit");
-        const loader = document.getElementById("loader");
+        const toast = document.getElementById("customToast");
         
         btnSubmit.disabled = true;
-        loader.style.display = "block";
+        btnSubmit.innerText = "Mengirim...";
         
         const dataForm = {
             tanggal: document.getElementById("tanggal").value,
@@ -163,7 +230,7 @@
             deskripsi: document.getElementById("deskripsi").value
         };
 
-        // Mengirim data ke Google Sheets
+        // Kirim data ke Google Sheets [MTC Request]
         fetch(API_URL, {
             method: "POST",
             mode: "no-cors",
@@ -173,16 +240,23 @@
             body: JSON.stringify(dataForm)
         });
 
-        // Tembak dan lupakan (Fire and Forget)
-        // Karena mode 'no-cors' terbukti selalu sukses memasukkan data ke backend,
-        // kita langsung beri jeda 1 detik untuk pengalaman pengguna yang mulus, lalu tampilkan pesan sukses.
+        // Fire and forget logic dengan Custom Toast Animasi
         setTimeout(function() {
-            alert("Laporan berhasil terkirim! Notifikasi telah diteruskan ke Telegram Admin.");
+            // Memunculkan Toast
+            toast.classList.add("show");
+            
+            // Reset Formulir
             document.getElementById("repairForm").reset();
             document.getElementById('tanggal').valueAsDate = new Date();
             btnSubmit.disabled = false;
-            loader.style.display = "none";
-        }, 1000);
+            btnSubmit.innerText = "Kirim Permintaan";
+
+            // Menyembunyikan kembali Toast setelah 3 detik
+            setTimeout(function() {
+                toast.classList.remove("show");
+            }, 3000);
+            
+        }, 800);
     });
 </script>
 
